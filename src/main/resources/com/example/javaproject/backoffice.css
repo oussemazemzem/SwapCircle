@@ -415,3 +415,102 @@
     -fx-background-radius: 30px;
     -fx-clip: "M30,15 A15,15 0 1,1 0,15 A15,15 0 1,1 30,15 Z";
 }
+
+.response-button {
+    -fx-font-size: 14px;
+    -fx-background-color: #4c51bf;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 24;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.response-button:hover {
+    -fx-background-color: #434190;
+    -fx-cursor: hand;
+}
+
+.tabular-list {
+    -fx-padding: 0 0 10 0; /* Ajoute une marge en bas */
+}
+.list-cell {
+    -fx-padding: 10px;
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #f7fafc;
+}
+
+/* Style pour l'en-tête */
+.list-header {
+    -fx-background-color: #4c51bf;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}
+
+.list-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.list-cell:filled:selected {
+    -fx-background-color: #ebf8ff;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #f7fafc;
+}
+
+/* Styles pour les titres principaux */
+.main-title {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-font-size: 32px; /* Plus grand que 28px */
+    -fx-font-weight: 800; /* Plus épais que bold */
+    -fx-text-fill: linear-gradient(to right, #4c51bf, #2d3748); /* Dégradé de couleur */
+    -fx-padding: 0 0 25px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 0, 2, 2, 2); /* Ombre portée */
+}
+
+/* Style spécifique pour le titre des réponses */
+.response-title {
+    -fx-text-fill: #4c51bf; /* Couleur bleue */
+    -fx-border-color: #4c51bf;
+    -fx-border-width: 0 0 3px 0;
+    -fx-padding: 0 0 15px 0;
+}
+
+/* Style spécifique pour le titre des réclamations */
+.claim-title {
+    -fx-text-fill: #2d3748; /* Couleur gris foncé */
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 3px 0;
+    -fx-padding: 0 0 15px 0;
+}
+/* ==================== */
+/* TITRES PERSONNALISES */
+/* ==================== */
+
+.main-title claim-title {
+    -fx-font-size: 28px; /* Plus grand que 24px */
+    -fx-font-weight: 800; /* Plus épais que bold */
+    -fx-text-fill: linear-gradient(to right, #4c51bf, #2d3748);
+    -fx-padding: 0 0 20px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 0, 2, 2, 2);
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-title response-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #4c51bf; /* Couleur bleue unie */
+    -fx-padding: 0 0 20px 0;
+    -fx-border-color: #4c51bf;
+    -fx-border-width: 0 0 3px 0;
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-title claim-title {
+}

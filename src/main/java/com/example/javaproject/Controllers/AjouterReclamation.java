@@ -11,7 +11,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -153,7 +157,8 @@ public class AjouterReclamation {
 
                 int rowsInserted = stmt.executeUpdate();
                 if (rowsInserted > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Réclamation ajoutée avec succès !");
+                    Alert successAlert = createSuccessAlert("Succès", "Réclamation ajoutée avec succès !");
+                    successAlert.showAndWait();
                     clearForm();
                 }
             }
@@ -161,6 +166,28 @@ public class AjouterReclamation {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur SQL", "Échec de l'enregistrement: " + e.getMessage());
         }
+    }
+
+    private Alert createSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        // Création de l'icône verte ✓
+        Text checkIcon = new Text("✓");
+        checkIcon.setFont(Font.font("System", FontWeight.BOLD, 24));
+        checkIcon.setFill(Color.GREEN);
+
+        // Appliquer l'icône
+        alert.setGraphic(checkIcon);
+
+        // Style optionnel pour renforcer le visuel de validation
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #f8fff8;");
+        dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #006400;");
+
+        return alert;
     }
 
     private void clearForm() {

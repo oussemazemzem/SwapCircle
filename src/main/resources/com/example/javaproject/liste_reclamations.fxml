@@ -28,7 +28,7 @@
                       styleClass="force-initial-layout"/> <!-- Nouvelle classe -->
         </ScrollPane>
         <HBox alignment="CENTER" spacing="10" styleClass="button-container">
-            <Button text="Retour" onAction="#handleBackButton" styleClass="back-button"/>
+            <Button text="Ajouter une nouvelle reclamation" onAction="#handleBackButton" styleClass="back-button"/>
         </HBox>
     </VBox>
 

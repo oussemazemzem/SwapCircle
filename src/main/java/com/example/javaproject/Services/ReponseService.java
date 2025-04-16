@@ -3,6 +3,8 @@ package com.example.javaproject.Services;
 import com.example.javaproject.Entities.Reponse;
 import com.example.javaproject.Interfaces.IService;
 import com.example.javaproject.Tools.Myconnection;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -106,6 +108,37 @@ public class ReponseService implements IService<Reponse> {
         }
         return null;
     }
+
+    public List<Reponse> getReponsesByUtilisateur(int idUtilisateur) {
+        List<Reponse> list = new ArrayList<>();
+        String query = "SELECT r.*, rec.titre as reclamation_titre, rec.statut as reclamation_statut " +
+                "FROM reponse r " +
+                "JOIN reclamation rec ON r.id_reclamation = rec.id " +
+                "WHERE r.id_utilisateur = ?";
+
+        try (PreparedStatement pst = cnx.prepareStatement(query)) {
+            pst.setInt(1, idUtilisateur);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Reponse r = new Reponse();
+                    r.setId(rs.getInt("id_reponse"));
+                    r.setIdReclamation(rs.getInt("id_reclamation"));
+                    r.setIdUtilisateur(rs.getInt("id_utilisateur"));
+                    r.setContenu(rs.getString("contenu"));
+                    r.setDateReponse(rs.getTimestamp("date_reponse").toLocalDateTime());
+                    r.setReclamationTitre(rs.getString("reclamation_titre"));
+
+                    list.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des réponses: " + e.getMessage());
+        }
+
+        return list;
+    }
+
     public Reponse findByReclamationId(int reclamationId) {
         String query = "SELECT * FROM reponse WHERE id_reclamation = ?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {

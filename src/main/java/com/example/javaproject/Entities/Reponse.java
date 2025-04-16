@@ -8,6 +8,7 @@ public class Reponse {
     private int idUtilisateur; // Champ ajouté
     private String contenu;
     private LocalDateTime dateReponse;
+    private String reclamationTitre;
 
     public Reponse() {
         this.dateReponse = LocalDateTime.now();
@@ -35,4 +36,12 @@ public class Reponse {
 
     public LocalDateTime getDateReponse() { return dateReponse; }
     public void setDateReponse(LocalDateTime dateReponse) { this.dateReponse = dateReponse; }
+
+    public String getReclamationTitre() {
+        return reclamationTitre;
+    }
+
+    public void setReclamationTitre(String reclamationTitre) {
+        this.reclamationTitre = reclamationTitre;
+    }
 }
