@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javaproject.Controllers.ListeReclamationsController"
+            stylesheets="@listereclamation.css"
+            styleClass="root"
+            prefWidth="1200.0" prefHeight="800.0">
+
+    <VBox spacing="20" alignment="TOP_CENTER" AnchorPane.topAnchor="20" AnchorPane.bottomAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20" styleClass="main-container">
+        <!-- Titre principal -->
+        <Label text="Liste des Réclamations" styleClass="main-title"/>
+
+        <!-- Barre de recherche et filtres -->
+        <HBox spacing="15" alignment="CENTER">
+            <TextField fx:id="searchField" promptText="Rechercher..." styleClass="search-field"/>
+            <ComboBox fx:id="statusFilter" promptText="Filtrer par statut" styleClass="filter-combo"/>
+            <ComboBox fx:id="priorityFilter" promptText="Filtrer par priorité" styleClass="filter-combo"/>
+        </HBox>
+
+        <!-- Conteneur des cartes avec scroll -->
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="scroll-pane">
+            <FlowPane fx:id="cardsContainer" alignment="TOP_CENTER" hgap="20" vgap="20"
+                      styleClass="force-initial-layout"/> <!-- Nouvelle classe -->
+        </ScrollPane>
+        <HBox alignment="CENTER" spacing="10" styleClass="button-container">
+            <Button text="Retour" onAction="#handleBackButton" styleClass="back-button"/>
+        </HBox>
+    </VBox>
+
+</AnchorPane>

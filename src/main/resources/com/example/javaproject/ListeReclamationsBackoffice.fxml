@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javaproject.Controllers.ListeReclamationsBackofficeController"
+            fx:id="rootPane" stylesheets="@backoffice.css">
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20" styleClass="list-container">
+            <padding>
+                <Insets top="20" bottom="20" left="20" right="20"/>
+            </padding>
+
+            <Label text="Gestion des Réclamations" styleClass="main-title"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+
+            <!-- En-têtes de colonnes -->
+            <GridPane styleClass="list-header" style="-fx-font-size: 14px; -fx-background-color: #4c51bf;">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="10" halignment="CENTER"/>
+                    <ColumnConstraints percentWidth="30" halignment="LEFT"/>
+                    <ColumnConstraints percentWidth="20" halignment="LEFT"/>
+                    <ColumnConstraints percentWidth="15" halignment="CENTER"/>
+                    <ColumnConstraints percentWidth="15" halignment="CENTER"/>
+                    <ColumnConstraints percentWidth="10" halignment="CENTER"/>
+                </columnConstraints>
+
+                <children>
+                    <Label text="Date" GridPane.columnIndex="0" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Titre" GridPane.columnIndex="1" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Type" GridPane.columnIndex="2" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Priorité" GridPane.columnIndex="3" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Statut" GridPane.columnIndex="4" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Actions" GridPane.columnIndex="5" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                </children>
+            </GridPane>
+
+            <!-- ListView avec apparence tabulaire -->
+            <ListView fx:id="reclamationsList" styleClass="tabular-list"
+                      style="-fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #e2e8f0;"/>
+        </VBox>
+    </center>
+</BorderPane>
