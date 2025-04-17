@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -67,44 +68,43 @@ public class ListeReclamationsBackofficeController {
             private final Button actionBtn = new Button("Répondre");
 
             {
-                // Configuration de la grille
-                ColumnConstraints col1 = new ColumnConstraints();
-                col1.setPercentWidth(10);
-                col1.setHalignment(HPos.CENTER);
+                // Configuration identique au FXML (largeur totale: 120+200+200+100+100+100 = 820px)
+                ColumnConstraints colDate = new ColumnConstraints(120, 120, 120);
+                ColumnConstraints colTitle = new ColumnConstraints(200, 200, 200);
+                ColumnConstraints colType = new ColumnConstraints(400, 400, 400);
+                ColumnConstraints colPriority = new ColumnConstraints(100, 100, 100);
+                ColumnConstraints colStatus = new ColumnConstraints(100, 100, 100);
+                ColumnConstraints colAction = new ColumnConstraints(120, 120, 120);
 
-                ColumnConstraints col2 = new ColumnConstraints();
-                col2.setPercentWidth(30);
-                col2.setHalignment(HPos.LEFT);
+                // Alignement identique au header
+                colDate.setHalignment(HPos.CENTER);
+                colTitle.setHalignment(HPos.LEFT);
+                colType.setHalignment(HPos.LEFT);
+                colPriority.setHalignment(HPos.CENTER);
+                colStatus.setHalignment(HPos.CENTER);
+                colAction.setHalignment(HPos.CENTER);
 
-                ColumnConstraints col3 = new ColumnConstraints();
-                col3.setPercentWidth(20);
-                col3.setHalignment(HPos.LEFT);
+                // Gestion du padding et espacement identique
+                rowContainer.getColumnConstraints().addAll(colDate, colTitle, colType, colPriority, colStatus, colAction);
+                rowContainer.setHgap(0); // Supprime l'espace entre colonnes
+                rowContainer.setPadding(new Insets(8, 5, 8, 5));
+                rowContainer.setPrefWidth(820); // Largeur totale
 
-                ColumnConstraints col4 = new ColumnConstraints();
-                col4.setPercentWidth(15);
-                col4.setHalignment(HPos.CENTER);
+                // Style cohérent
+                String commonStyle = "-fx-font-size: 14px; -fx-text-fill: #2d3748; -fx-padding: 0 10px;"; // Padding horizontal
 
-                ColumnConstraints col5 = new ColumnConstraints();
-                col5.setPercentWidth(15);
-                col5.setHalignment(HPos.CENTER);
+                dateLabel.setStyle(commonStyle + "-fx-alignment: center;");
+                titleLabel.setStyle(commonStyle + "-fx-font-weight: bold; -fx-alignment: center-left;");
+                typeLabel.setStyle(commonStyle + "-fx-alignment: center-left;");
+                priorityLabel.setStyle(commonStyle + "-fx-alignment: center;");
+                statusLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 3px 10px; "
+                        + "-fx-background-radius: 10px; -fx-alignment: center;");
 
-                ColumnConstraints col6 = new ColumnConstraints();
-                col6.setPercentWidth(10);
-                col6.setHalignment(HPos.CENTER);
+                actionBtn.setStyle("-fx-font-size: 13px; -fx-background-color: #4c51bf; "
+                        + "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px; "
+                        + "-fx-background-radius: 5px; -fx-alignment: center;");
 
-                rowContainer.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6);
-                rowContainer.setHgap(10);
-                rowContainer.setPadding(new Insets(10, 5, 10, 5));
-
-                // Style des composants
-                dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                titleLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                typeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                priorityLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                statusLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 2px 8px; -fx-background-radius: 10px;");
-                actionBtn.setStyle("-fx-font-size: 13px; -fx-background-color: #4c51bf; -fx-text-fill: white; -fx-font-weight: bold;");
-
-                // Ajout des composants à la grille
+                // Ajout avec les mêmes index que le header
                 rowContainer.add(dateLabel, 0, 0);
                 rowContainer.add(titleLabel, 1, 0);
                 rowContainer.add(typeLabel, 2, 0);
@@ -119,17 +119,22 @@ public class ListeReclamationsBackofficeController {
 
                 if (empty || reclamation == null) {
                     setGraphic(null);
+                    setStyle("-fx-background-color: transparent;");
                 } else {
                     // Formatage de la date
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     dateLabel.setText(reclamation.getDateReclamation().format(formatter));
 
-                    titleLabel.setText(reclamation.getTitre());
+                    // Gestion du texte long avec tooltip
+                    String fullTitle = reclamation.getTitre();
+                    titleLabel.setText(fullTitle.length() > 45 ? fullTitle.substring(0, 42) + "..." : fullTitle);
+                    titleLabel.setTooltip(new Tooltip(fullTitle));
+
                     typeLabel.setText(reclamation.getTypeReclamation());
                     priorityLabel.setText(reclamation.getPriorite());
                     statusLabel.setText(reclamation.getStatut());
 
-                    // Appliquer le style de statut
+                    // Style dynamique du statut
                     String statusStyle = "";
                     switch (reclamation.getStatut().toLowerCase()) {
                         case "en attente":
@@ -154,14 +159,29 @@ public class ListeReclamationsBackofficeController {
                     statusLabel.setStyle(statusLabel.getStyle() + statusStyle);
 
                     // Gestion du bouton Répondre
-                    boolean canRespond = canRespondToReclamation(reclamation);
+                    boolean canRespond = reclamation.getReponse() == null; // Vérifie directement si la réclamation n'a pas de réponse
                     actionBtn.setDisable(!canRespond);
-                    actionBtn.setOnAction(event -> handleResponse(reclamation));
+                    actionBtn.setVisible(true); // Toujours visible mais peut être désactivé
 
-                    if (!canRespond) {
-                        actionBtn.setStyle("-fx-opacity: 0.5; -fx-background-color: #a0a0a0;");
+                    if (canRespond) {
+                        actionBtn.setStyle("-fx-font-size: 13px; -fx-background-color: #4c51bf; "
+                                + "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5px 10px; "
+                                + "-fx-background-radius: 5px; -fx-alignment: center;");
                     } else {
-                        actionBtn.setStyle("-fx-font-size: 13px; -fx-background-color: #4c51bf; -fx-text-fill: white; -fx-font-weight: bold;");
+                        actionBtn.setStyle("-fx-opacity: 0.5; -fx-background-color: #a0aec0;");
+                    }
+
+                    actionBtn.setOnAction(event -> {
+                        if (canRespond) {
+                            handleResponse(reclamation);
+                        }
+                    });
+
+                    // Style alterné des lignes
+                    if (getIndex() % 2 == 0) {
+                        setStyle("-fx-background-color: white;");
+                    } else {
+                        setStyle("-fx-background-color: #f8fafc;");
                     }
 
                     setGraphic(rowContainer);

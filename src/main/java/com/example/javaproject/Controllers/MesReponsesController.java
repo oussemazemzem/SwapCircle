@@ -1,20 +1,25 @@
 package com.example.javaproject.Controllers;
 
+import com.example.javaproject.Entities.Reclamation;
 import com.example.javaproject.Entities.Reponse;
 import com.example.javaproject.Entities.Utilisateur;
+import com.example.javaproject.Services.ReclamationService;
 import com.example.javaproject.Services.ReponseService;
 import com.example.javaproject.Services.UtilisateurService;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.control.Label;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
-import javafx.scene.layout.Region;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 public class MesReponsesController {
@@ -28,8 +33,6 @@ public class MesReponsesController {
     @FXML
     public void initialize() {
         configureListCells();
-
-        // Configurer la taille de la ListView
         reponsesList.setPrefHeight(Region.USE_COMPUTED_SIZE);
         reponsesList.setPrefWidth(Region.USE_COMPUTED_SIZE);
     }
@@ -44,41 +47,57 @@ public class MesReponsesController {
             private final Label dateLabel = new Label();
             private final Label reclamationLabel = new Label();
             private final Label reponseLabel = new Label();
-            private final Label utilisateurLabel = new Label(); // Changé de statutLabel à utilisateurLabel
+            private final Label utilisateurLabel = new Label();
+            private final Button updateBtn = new Button("🔄");
+            private final Button deleteBtn = new Button("❌");
+            private final HBox actionBox = new HBox(5, updateBtn, deleteBtn);
 
             {
-                // Configuration de la grille
-                ColumnConstraints col1 = new ColumnConstraints();
-                col1.setPercentWidth(15);
-                col1.setHalignment(HPos.CENTER);
+                // Configuration des contraintes de colonnes (identique au FXML)
+                ColumnConstraints colDate = new ColumnConstraints();
+                colDate.setPercentWidth(15);
+                colDate.setHalignment(HPos.CENTER);
 
-                ColumnConstraints col2 = new ColumnConstraints();
-                col2.setPercentWidth(25);
-                col2.setHalignment(HPos.LEFT);
+                ColumnConstraints colReclamation = new ColumnConstraints();
+                colReclamation.setPercentWidth(25);
+                colReclamation.setHalignment(HPos.LEFT);
 
-                ColumnConstraints col3 = new ColumnConstraints();
-                col3.setPercentWidth(40);
-                col3.setHalignment(HPos.LEFT);
+                ColumnConstraints colReponse = new ColumnConstraints();
+                colReponse.setPercentWidth(30);
+                colReponse.setHalignment(HPos.LEFT);
 
-                ColumnConstraints col4 = new ColumnConstraints();
-                col4.setPercentWidth(20);
-                col4.setHalignment(HPos.CENTER);
+                ColumnConstraints colUser = new ColumnConstraints();
+                colUser.setPercentWidth(15);
+                colUser.setHalignment(HPos.CENTER);
 
-                rowContainer.getColumnConstraints().addAll(col1, col2, col3, col4);
-                rowContainer.setHgap(10);
-                rowContainer.setPadding(new Insets(10, 5, 10, 5));
+                ColumnConstraints colAction = new ColumnConstraints();
+                colAction.setPercentWidth(15);
+                colAction.setHalignment(HPos.CENTER);
 
-                // Style des composants
-                dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                reclamationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                reponseLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3748;");
-                utilisateurLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 2px 8px;");
+                rowContainer.getColumnConstraints().addAll(colDate, colReclamation, colReponse, colUser, colAction);
+                rowContainer.setHgap(5);
+                rowContainer.setPadding(new Insets(5));
+                rowContainer.setPrefWidth(800); // Ajustez selon votre besoin
 
-                // Ajout des composants à la grille
+                // Style commun avec alignement explicite
+                String commonStyle = "-fx-font-size: 16px; -fx-text-fill: #2d3748; -fx-padding: 0 5px; -fx-font-weight: bold;";
+
+                dateLabel.setStyle(commonStyle + "-fx-alignment: center;");
+                reclamationLabel.setStyle(commonStyle + "-fx-alignment: center-left;");
+                reponseLabel.setStyle(commonStyle + "-fx-alignment: center-left; -fx-wrap-text: true;");
+                utilisateurLabel.setStyle(commonStyle + "-fx-alignment: center; -fx-text-fill: #4c51bf;");
+
+                // Configuration des boutons
+                updateBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-min-width: 10;");
+                deleteBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-min-width: 10;");
+                actionBox.setAlignment(Pos.CENTER);
+
+                // Ajout des composants
                 rowContainer.add(dateLabel, 0, 0);
                 rowContainer.add(reclamationLabel, 1, 0);
                 rowContainer.add(reponseLabel, 2, 0);
                 rowContainer.add(utilisateurLabel, 3, 0);
+                rowContainer.add(actionBox, 4, 0);
             }
 
             @Override
@@ -88,23 +107,18 @@ public class MesReponsesController {
                 if (empty || reponse == null) {
                     setGraphic(null);
                 } else {
-                    // Formatage de la date
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     dateLabel.setText(reponse.getDateReponse().format(formatter));
 
                     reclamationLabel.setText(reponse.getReclamationTitre());
                     reponseLabel.setText(reponse.getContenu());
 
-                    // Récupération du nom de l'utilisateur
                     Utilisateur utilisateur = utilisateurService.getById(reponse.getIdUtilisateur());
-                    if (utilisateur != null) {
-                        utilisateurLabel.setText(utilisateur.getNom() + " " + utilisateur.getPrenom());
-                    } else {
-                        utilisateurLabel.setText("Inconnu");
-                    }
+                    utilisateurLabel.setText(utilisateur != null ?
+                            utilisateur.getNom() + " " + utilisateur.getPrenom() : "Inconnu");
 
-                    // Style optionnel pour le label utilisateur
-                    utilisateurLabel.setStyle(utilisateurLabel.getStyle() + "-fx-text-fill: #4c51bf;");
+                    updateBtn.setOnAction(e -> handleUpdateReponse(reponse));
+                    deleteBtn.setOnAction(e -> handleDeleteReponse(reponse));
 
                     setGraphic(rowContainer);
                 }
@@ -112,10 +126,76 @@ public class MesReponsesController {
         });
     }
 
+    private void handleUpdateReponse(Reponse reponse) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/UpdateReponseDialog.fxml"));
+            Parent root = loader.load();
+
+            UpdateReponseDialogController controller = loader.getController();
+            controller.setReponse(reponse);
+
+            Stage dialog = new Stage();
+            dialog.setScene(new Scene(root));
+            dialog.setTitle("Modifier la réponse");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.showAndWait();
+
+            // Rafraîchir après modification
+            loadReponses();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible de charger l'interface de modification", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void handleDeleteReponse(Reponse reponse) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirmation de suppression");
+        confirmation.setHeaderText("Supprimer cette réponse ?");
+        confirmation.setContentText("Cette action est irréversible.");
+
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    // 1. Récupérer l'ID de la réclamation associée
+                    int reclamationId = reponse.getIdReclamation(); // Adaptez selon votre structure
+
+                    // 2. Supprimer la réponse
+                    ReponseService reponseService = new ReponseService();
+                    boolean deleteSuccess = reponseService.deleteEntity(reponse);
+
+                    if (deleteSuccess) {
+                        // 3. Mettre à jour le statut de la réclamation
+                        ReclamationService reclamationService = new ReclamationService();
+                        Reclamation reclamation = reclamationService.findById(reclamationId);
+
+                        if (reclamation != null) {
+                            reclamation.setStatut("En attente");
+                            reclamationService.updateEntity(reclamation);
+
+                            // Optionnel : vérifier si la mise à jour a réussi
+                            Reclamation updatedReclamation = reclamationService.findById(reclamationId);
+                            if ("En attente".equals(updatedReclamation.getStatut())) {
+                                showAlert("Succès", "Réponse supprimée", Alert.AlertType.INFORMATION);
+                            } else {
+                                showAlert("Avertissement", "Réponse supprimée mais problème de mise à jour du statut", Alert.AlertType.WARNING);
+                            }
+                        }
+
+                        loadReponses(); // Rafraîchir l'affichage
+                    } else {
+                        showAlert("Erreur", "Échec de la suppression de la réponse", Alert.AlertType.ERROR);
+                    }
+                } catch (Exception e) {
+                    showAlert("Erreur critique", "Erreur: " + e.getMessage(), Alert.AlertType.ERROR);
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public void loadReponses() {
-        // Charge les réponses de l'utilisateur connecté (remplacez 1 par l'ID utilisateur)
         reponsesList.setItems(FXCollections.observableArrayList(
-                reponseService.getReponsesByUtilisateur(1)
+                reponseService.getReponsesByUtilisateur(1) // Remplacez par l'ID de l'utilisateur connecté
         ));
     }
 
@@ -124,5 +204,13 @@ public class MesReponsesController {
         if (mainController != null) {
             mainController.returnToListView();
         }
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

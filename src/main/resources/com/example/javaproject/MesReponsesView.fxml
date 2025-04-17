@@ -27,8 +27,9 @@
                 <columnConstraints>
                     <ColumnConstraints percentWidth="15" halignment="CENTER"/>
                     <ColumnConstraints percentWidth="25" halignment="LEFT"/>
-                    <ColumnConstraints percentWidth="40" halignment="LEFT"/>
-                    <ColumnConstraints percentWidth="20" halignment="CENTER"/>
+                    <ColumnConstraints percentWidth="30" halignment="LEFT"/> <!-- Réduisez cette largeur -->
+                    <ColumnConstraints percentWidth="15" halignment="CENTER"/>
+                    <ColumnConstraints percentWidth="15" halignment="CENTER"/> <!-- Nouvelle colonne pour les actions -->
                 </columnConstraints>
 
                 <children>
@@ -36,12 +37,13 @@
                     <Label text="Réclamation" GridPane.columnIndex="1" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
                     <Label text="Réponse" GridPane.columnIndex="2" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
                     <Label text="Utilisateur" GridPane.columnIndex="3" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label text="Actions" GridPane.columnIndex="4" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
                 </children>
             </GridPane>
 
             <!-- ListView avec apparence tabulaire -->
             <ListView fx:id="reponsesList" styleClass="tabular-list"
-                      style="-fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #e2e8f0;"/>
+                      style="-fx-font-size: 20px; -fx-background-color: white; -fx-border-color: #e2e8f0;"/>
         </VBox>
     </center>
 </BorderPane>

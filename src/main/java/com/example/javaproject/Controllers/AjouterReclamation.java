@@ -43,9 +43,33 @@ public class AjouterReclamation {
     @FXML
     public void initialize() {
         // Initialisation des ComboBox
-        typeComboBox.getItems().addAll("Problème technique", "Service client", "Autre");
-        prioriteComboBox.getItems().addAll("Haute", "Moyenne", "Basse");
-        categorieComboBox.getItems().addAll("Général", "Urgent", "Non urgent");
+        typeComboBox.getItems().addAll(
+                "Problème de livraison",
+                "Produit non conforme",
+                "Échange non honoré",
+                "Problème de recyclage",
+                "Question sur les points de recyclage",
+                "Problème de compte utilisateur",
+                "Demande d'information",
+                "Autre"
+        );
+        prioriteComboBox.getItems().addAll(
+                "Urgent",
+                "Important",
+                "Normal",
+                "Faible"
+        );
+        categorieComboBox.getItems().addAll(
+                "Échange de produits",
+                "Collecte de déchets",
+                "Points de recyclage",
+                "Compte utilisateur",
+                "Système de points",
+                "Livraison/Transport",
+                "Qualité des produits",
+                "Service après-échange",
+                "Autre"
+        );
 
         // Masquer les labels d'erreur au démarrage
         clearErrorLabels();

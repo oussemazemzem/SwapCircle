@@ -63,6 +63,7 @@
     -fx-border-radius: 0 0 5px 5px;
     -fx-background-radius: 0 0 5px 5px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-font-size: 20px;
 }
 
 .tabular-list .list-cell {
@@ -104,6 +105,21 @@
 .reclamation-list .list-cell .label {
     -fx-font-size: 14px;
     -fx-text-fill: #2d3748;
+}
+.list-cell {
+    -fx-cell-size: 40px;
+}
+
+/* Supprime les bordures internes */
+.tabular-list {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+/* Alignement parfait header/content */
+.list-header .label,
+.tabular-list .list-cell .label {
+    -fx-padding: 0 10px;
 }
 
 /* ==================== */
@@ -512,5 +528,31 @@
     -fx-font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-.main-title claim-title {
+/* ==================== */
+/* DIALOGUE DE MISE À JOUR */
+/* ==================== */
+
+.response-textarea {
+    -fx-min-height: 200px;
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+}
+
+.response-textarea:focused {
+    -fx-border-color: #4c51bf;
+    -fx-effect: dropshadow(gaussian, rgba(76, 81, 191, 0.2), 0, 0, 0, 3);
+}
+
+/* Style cohérent avec le reste de l'application */
+.dialog-container {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }

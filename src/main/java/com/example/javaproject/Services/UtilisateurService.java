@@ -5,7 +5,6 @@ import com.example.javaproject.Interfaces.IService;
 import com.example.javaproject.Tools.Myconnection;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +58,7 @@ public class UtilisateurService implements IService<Utilisateur> {
     }
 
     @Override
-    public void deleteEntity(Utilisateur utilisateur) {
+    public boolean deleteEntity(Utilisateur utilisateur) {
         String query = "DELETE FROM utilisateur WHERE id=?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {
             pst.setInt(1, utilisateur.getId());
@@ -67,6 +66,7 @@ public class UtilisateurService implements IService<Utilisateur> {
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression de l'utilisateur: " + e.getMessage());
         }
+        return false;
     }
 
     @Override

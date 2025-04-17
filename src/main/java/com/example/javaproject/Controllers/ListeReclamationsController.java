@@ -1,19 +1,24 @@
 package com.example.javaproject.Controllers;
 
 import com.example.javaproject.Entities.Reclamation;
+import com.example.javaproject.Entities.Reponse;
 import com.example.javaproject.Services.ReclamationService;
+import com.example.javaproject.Services.ReponseService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -43,14 +48,9 @@ public class ListeReclamationsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Platform.runLater(() -> {
-            // Forcer le calcul des dimensions
             cardsContainer.applyCss();
             cardsContainer.layout();
-
-            // Charger les données
             loadReclamations();
-
-            // Ajuster à nouveau après le chargement
             Platform.runLater(() -> {
                 cardsContainer.applyCss();
                 cardsContainer.layout();
@@ -72,15 +72,6 @@ public class ListeReclamationsController implements Initializable {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterReclamations());
     }
 
-    private void setupContainer() {
-        // Configuration responsive
-        scrollPane.viewportBoundsProperty().addListener((obs, oldVal, newVal) -> {
-            adjustCardSizes(newVal.getWidth());
-        });
-
-        // Style initial forcé
-        cardsContainer.setStyle("-fx-pref-width: 800px;");
-    }
 
     private void loadReclamations() {
         ReclamationService service = new ReclamationService();
@@ -113,22 +104,29 @@ public class ListeReclamationsController implements Initializable {
         // Contenu
         Label message = createCardField("💬 " + rec.getMessage());
         Label date = createCardField("📅 " + rec.getDateReclamation().format(formatter));
-        Label type = createCardField("📂 " + rec.getTypeReclamation());
-
-        Label priority = createCardField("⚠️ Priorité : " + rec.getPriorite());
-        priority.getStyleClass().add("priorite-" + rec.getPriorite().toLowerCase().replace("é", "e"));
-
+        Label type = createCardField("📂 Type : " + rec.getTypeReclamation());
+        Label priority = createCardField("❗ Priorité : " + rec.getPriorite());
         Label status = createCardField("✅ Statut : " + rec.getStatut());
-        status.getStyleClass().add("statut-" + rec.getStatut().toLowerCase().replace("é", "e").replace(" ", "-"));
+        Label category = createCardField("🏷 Catégorie : " + rec.getCategorie());
 
-        Label category = createCardField("🏷 " + rec.getCategorie());
+        // Boutons
+        HBox buttonsContainer = new HBox(10);
+
 
         // Bouton Supprimer
         Button deleteButton = new Button("Supprimer");
         deleteButton.getStyleClass().add("delete-button");
         deleteButton.setOnAction(e -> handleDeleteReclamation(rec, card));
 
-        card.getChildren().addAll(title, message, date, type, priority, status, category, deleteButton);
+        // Bouton Voir Réponse (conditionnel)
+        Button viewResponseButton = new Button("Voir réponse");
+        viewResponseButton.getStyleClass().add("view-button");
+        viewResponseButton.setVisible("Approuvée".equals(rec.getStatut()));
+        viewResponseButton.setOnAction(e -> handleViewResponse(rec));
+
+        buttonsContainer.getChildren().addAll(deleteButton, viewResponseButton);
+
+        card.getChildren().addAll(title, message, date, type, priority, status, category, buttonsContainer);
         return card;
     }
 
@@ -157,18 +155,90 @@ public class ListeReclamationsController implements Initializable {
             e.printStackTrace();
         }
     }
+    private void handleViewResponse(Reclamation reclamation) {
+        try {
+            ReponseService reponseService = new ReponseService();
+            Reponse reponse = reponseService.findByReclamationId(reclamation.getId());
 
-    // Ajoutez cette méthode utilitaire si elle n'existe pas déjà
+            if (reponse != null) {
+                // Création de la fenêtre popup
+                Stage popup = new Stage();
+                popup.initModality(Modality.APPLICATION_MODAL);
+                popup.setTitle("Réponse à votre réclamation");
+
+                // Conteneur principal avec style
+                VBox root = new VBox(20);
+                root.setPadding(new Insets(25));
+                root.setStyle("-fx-background-color: #f8f9fa;");
+
+                // Titre stylisé comme votre thème
+                Label titleLabel = new Label("Réponse à votre réclamation");
+                titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;");
+                titleLabel.setPadding(new Insets(0, 0, 15, 0));
+
+                // Date de réponse
+                HBox dateBox = new HBox(5);
+                Label dateIcon = new Label("📅");
+                dateIcon.setStyle("-fx-font-size: 16px;");
+                Label dateLabel = new Label("Réponse du " +
+                        reponse.getDateReponse().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+                dateBox.getChildren().addAll(dateIcon, dateLabel);
+
+                // Contenu avec scroll et style de carte
+                TextArea contentArea = new TextArea(reponse.getContenu());
+                contentArea.setEditable(false);
+                contentArea.setWrapText(true);
+                contentArea.setStyle("-fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #e0e0e0; " +
+                        "-fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 15px;");
+                contentArea.setPrefHeight(200);
+
+                // Bouton Fermer avec style cohérent
+                Button closeButton = new Button("Fermer");
+                closeButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; " +
+                        "-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 8px 20px; " +
+                        "-fx-background-radius: 8px; -fx-border-radius: 8px; " +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);");
+                closeButton.setOnAction(e -> popup.close());
+
+                // Effet hover pour le bouton
+                closeButton.setOnMouseEntered(e ->
+                        closeButton.setStyle(closeButton.getStyle() + "-fx-background-color: #388E3C;"));
+                closeButton.setOnMouseExited(e ->
+                        closeButton.setStyle(closeButton.getStyle() + "-fx-background-color: #4CAF50;"));
+
+                // Assemblage des composants
+                root.getChildren().addAll(titleLabel, dateBox, contentArea, closeButton);
+                root.setAlignment(Pos.TOP_CENTER);
+
+                // Configuration de la scène
+                Scene scene = new Scene(root, 500, 400);
+                popup.setScene(scene);
+                popup.setMinWidth(450);
+                popup.setMinHeight(350);
+
+                // Empêche la fermeture par la croix système
+                popup.setOnCloseRequest(e -> {
+                    e.consume();
+                    popup.close();
+                });
+
+                // Affichage de la popup
+                popup.showAndWait();
+            } else {
+                showAlert(Alert.AlertType.WARNING, "Aucune réponse", "Aucune réponse trouvée pour cette réclamation");
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la réponse : " + e.getMessage());
+        }
+    }
+
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    private String createEmojiLabel(String emoji) {
-        return String.format("%s ", emoji); // Ajoute un espace après l'emoji
     }
 
     private Label createCardField(String text) {
@@ -210,14 +280,6 @@ public class ListeReclamationsController implements Initializable {
         cardsContainer.requestLayout();
     }
 
-    private void forceLayoutUpdate() {
-        adjustCardSizes(scrollPane.getViewportBounds().getWidth());
-        cardsContainer.requestLayout();
-        Platform.runLater(() -> {
-            cardsContainer.layout();
-            scrollPane.requestLayout();
-        });
-    }
     @FXML
     private void handleBackButton(ActionEvent event) {  // Ajoutez le paramètre ActionEvent
         try {

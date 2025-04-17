@@ -60,7 +60,7 @@ public class ReclamationService implements IService<Reclamation> {
     }
 
     @Override
-    public void deleteEntity(Reclamation reclamation) {
+    public boolean deleteEntity(Reclamation reclamation) {
         String query = "DELETE FROM reclamation WHERE id=?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {
             pst.setInt(1, reclamation.getId());
@@ -68,6 +68,7 @@ public class ReclamationService implements IService<Reclamation> {
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression: " + e.getMessage());
         }
+        return false;
     }
 
     @Override

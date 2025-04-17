@@ -3,8 +3,6 @@ package com.example.javaproject.Services;
 import com.example.javaproject.Entities.Reponse;
 import com.example.javaproject.Interfaces.IService;
 import com.example.javaproject.Tools.Myconnection;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -41,7 +39,7 @@ public class ReponseService implements IService<Reponse> {
 
     @Override
     public void updateEntity(Reponse reponse) {
-        String query = "UPDATE reponse SET contenu = ?, date_reponse = ? WHERE id = ?";
+        String query = "UPDATE reponse SET contenu = ?, date_reponse = ? WHERE id_reponse = ?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {
             pst.setString(1, reponse.getContenu());
             pst.setTimestamp(2, Timestamp.valueOf(reponse.getDateReponse()));
@@ -54,13 +52,15 @@ public class ReponseService implements IService<Reponse> {
     }
 
     @Override
-    public void deleteEntity(Reponse reponse) {
-        String query = "DELETE FROM reponse WHERE id = ?";
+    public boolean deleteEntity(Reponse reponse) {
+        String query = "DELETE FROM reponse WHERE id_reponse = ?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {
             pst.setInt(1, reponse.getId());
-            pst.executeUpdate();
+            int rowsAffected = pst.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression de la réponse : " + e.getMessage());
+            return false;
         }
     }
 
@@ -73,7 +73,7 @@ public class ReponseService implements IService<Reponse> {
 
             while (rs.next()) {
                 Reponse r = new Reponse();
-                r.setId(rs.getInt("id"));
+                r.setId(rs.getInt("id_reponse"));
                 r.setIdReclamation(rs.getInt("id_reclamation"));
                 r.setIdUtilisateur(rs.getInt("id_utilisateur"));
                 r.setContenu(rs.getString("contenu"));
@@ -89,13 +89,13 @@ public class ReponseService implements IService<Reponse> {
     }
 
     public Reponse findById(int id) {
-        String query = "SELECT * FROM reponse WHERE id = ?";
+        String query = "SELECT * FROM reponse WHERE id_reponse = ?";
         try (PreparedStatement pst = cnx.prepareStatement(query)) {
             pst.setInt(1, id);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     Reponse r = new Reponse();
-                    r.setId(rs.getInt("id"));
+                    r.setId(rs.getInt("id_reponse"));
                     r.setIdReclamation(rs.getInt("id_reclamation"));
                     r.setIdUtilisateur(rs.getInt("id_utilisateur"));
                     r.setContenu(rs.getString("contenu"));
@@ -146,7 +146,7 @@ public class ReponseService implements IService<Reponse> {
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     Reponse r = new Reponse();
-                    r.setId(rs.getInt("id"));
+                    r.setId(rs.getInt("id_reponse"));
                     r.setIdReclamation(rs.getInt("id_reclamation"));
                     r.setIdUtilisateur(rs.getInt("id_utilisateur"));
                     r.setContenu(rs.getString("contenu"));
